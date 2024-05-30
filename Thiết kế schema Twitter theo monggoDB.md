@@ -178,3 +178,183 @@ interface Bookmark {
   created_at: Date
 }
 ```
+
+### hashtags
+- Hỗ trợ tìm kiếm theo hashtag.
+- Mỗi tweet có thể có ít hashtag.
+- Mỗi hashtag có rất nhiều tweet.
+- ❌Không nên làm như dưới đây
+
+```ts
+interface Tweet {
+  _id: ObjectId
+  user_id: ObjectId
+  type: TweetType
+  audience: TweetAudience
+  content: string
+  parent_id: null | ObjectId //  chỉ null khi tweet gốc
+  ❌hashtags:string[] // Không nên nhúng như thế này, vì sẽ gây khó khăn trong việc tìm kiếm những tweet nào có hashtag này, cũng như là gây lặp lại dữ liệu về tên hastag
+  mentions: ObjectId[]
+  medias: Media[]
+  guest_views: number
+  user_views: number
+  created_at: Date
+  updated_at: Date
+
+}
+```
+- => Quan hệ ít - rất nhiều
+
+- Lưu một array ObjectId `hashtags` trong collection tweets
+
+- Tạo ra một collection riêng để lưu `hashtags` và không lưu mảng `tweet_id` vào trong collection `hashtags`. Vì nếu lưu `tweet_id` vào trong collection `hashtags` thì sẽ dễ chạm đến giới hạn 16MB của MongoDB. Và cũng không cần thiết để lưu, vì khi search các tweet liên quan đến hashtag thì chúng ta sẽ dùng id hashtag để tìm kiếm trong collection tweets.
+
+```ts
+interface Hashtag {
+  _id: ObjectId
+  name: string
+  created_at: Date
+}
+```
+
+
+
+### Luồng tạo 1 tweet
+- Ở đây mình sẽ giả sử một trường hợp tạo tweet đầy đủ hashtag, mention và media
+
+- Một body đầy đủ sẽ như thế này
+
+```ts
+interface TweetRequestBody {
+  type: TweetType
+  audience: TweetAudience
+  content: string
+  parent_id: null | string //  chỉ null khi tweet gốc, không thì là tweet_id cha dạng string
+  hashtags: string[] // tên của hashtag dạng ['javascript', 'reactjs']
+  mentions: string[] // user_id[]
+  medias: Media[]
+}
+```
+- Validate Tweet body
+- Nếu mà để validate pass 100% case của tweet thì rất tốn thời gian, nên mình sẽ validate những case chính. Tất nhiên nó sẽ dính 1 số case hiếm gặp, các bạn phát hiện thì tự bổ sung vào nhé.
+
+- type phải là 1 trong 4 loại TweetType
+- audience phải là 1 trong 2 loại TweetAudience
+- Nếu type là retweet, comment, quotetweet thì `parent_id` phải là tweet_id của tweet cha, nếu type là tweet thì `parent_id` phải là null
+- Nếu type là retweet thì content phải là ''. Nếu type là comment, quotetweet, tweet và không có mentions và hashtags thì content phải là string và không được rỗng.
+- hashtags phải là mảng các string
+- mentions phải là mảng các string dạng id
+- medias phải là mảng các Media
+
+```ts
+- Schema validation Tweet
+{
+  "$jsonSchema": {
+    "bsonType": "object",
+    "title": "tweets object validation",
+    "required": [
+      "_id",
+      "user_id",
+      "type",
+      "audience",
+      "content",
+      "parent_id",
+      "hashtags",
+      "mentions",
+      "medias",
+      "guest_views",
+      "user_views",
+      "created_at",
+      "updated_at"
+    ],
+    "properties": {
+      "_id": {
+        "bsonType": "objectId",
+        "description": "'_id' must be a ObjectId and is required"
+      },
+      "user_id": {
+        "bsonType": "objectId",
+        "description": "'user_id' must be a ObjectId and is required"
+      },
+      "type": {
+        "bsonType": "int",
+        "enum": [0, 1, 2, 3],
+        "description": "'type' must be a TweetType and is required"
+      },
+      "audience": {
+        "bsonType": "int",
+        "enum": [0, 1],
+        "description": "'audience' must be a TweetAudience and is required"
+      },
+      "content": {
+        "bsonType": "string",
+        "description": "'content' must be a string and is required"
+      },
+      "parent_id": {
+        "bsonType": ["null", "objectId"],
+        "description": "'parent_id' must be a null or ObjectId and is required"
+      },
+      "hashtags": {
+        "bsonType": "array",
+        "uniqueItems": true,
+        "additionalProperties": false,
+        "items": {
+          "bsonType": "objectId"
+        },
+        "description": "'hashtags' must be a array and is required"
+      },
+      "mentions": {
+        "bsonType": "array",
+        "uniqueItems": true,
+        "additionalProperties": false,
+        "items": {
+          "bsonType": "objectId"
+        },
+        "description": "'mentions' must be a array and is required"
+      },
+      "medias": {
+        "bsonType": "array",
+        "uniqueItems": true,
+        "additionalProperties": false,
+        "items": {
+          "bsonType": "object",
+          "required": ["url", "type"],
+          "additionalProperties": false,
+          "properties": {
+            "type": {
+              "enum": [0, 1, 2],
+              "description": "'type' is required and can only be one of the given enum values"
+            },
+            "url": {
+              "bsonType": "string",
+              "description": "'url' is a required field of type string"
+            }
+          }
+        },
+        "description": "'medias' must be a array and is required"
+      },
+      "guest_views": {
+        "bsonType": "int",
+        "minimum": 0,
+        "description": "'guest_views' must be a ObjectId and is required"
+      },
+      "user_views": {
+        "bsonType": "int",
+        "minimum": 0,
+        "description": "'user_views' must be a number and is required"
+      },
+      "created_at": {
+        "bsonType": "date",
+        "description": "'created_at' must be a date and is required"
+      },
+      "updated_at": {
+        "bsonType": "date",
+        "description": "'updated_at' must be a date and is required"
+      }
+    },
+    "additionalProperties": false
+  }
+}
+```
+
+### link figma cho db https://figma.com/board/6ZRdulYUzHkTwxr2N5IRVO/Untitled?node-id=2-153&t=E62SWB9wQkycoSOJ-0

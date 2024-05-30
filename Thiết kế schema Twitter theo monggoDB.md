@@ -42,7 +42,7 @@ Một số  ghi chú
   Verified, // đã xác thực email
   Banned // bị khóa
   }
-  
+
   interface User {
   _id: ObjectId
   name: string
@@ -63,3 +63,24 @@ Một số  ghi chú
   cover_photo: string // optional
   }
   ```
+
+## refresh_tokens
+
+ - Hệ thống sẽ dung jwt để xác thực người dùng.vậy mỗi lần người dùng đăng nhập thành công sẽ tạo ra 1 JWWT ACCESSTOKEN và 1 refresh token 
+
+ - JWT access token thì không cần lưu vào db, vì chúng ta sẽ cho nó staless 
+ - cón refesh token thì cần lưu vào database để tăng tính báo mật
+
+- Một user thì có nhìu refresh token (không giới hạn) nên không thể lưu hết vào trong 1 collections  `user` được => quan hện 1 - nhìu
+
+- và đôi lúc chúng ta chỉ cần quan tâm đên refresh token và không cần biết user là ai.vậy nên ta tạo 1 collection riêng để lưu refresh token 
+
+``` ts
+interface RefreshToken {
+  _id: ObjectId
+  token: string
+  created_at: Date
+  user_id: ObjectId
+}
+
+```

@@ -120,15 +120,15 @@ interface Follower {
 
 - type đại diện cho loại tweet. Ví dụ tweet, retweet, quote tweet.
 
-- hashtag là mảng chứa ObjectId của các hashtag. Vì mỗi tweet có thể có nhiều hashtag. Vậy nên hashtag có thể là ObjectId[].
+- hashtag là mảng chứa `ObjectId` của các hashtag. Vì mỗi tweet có thể có nhiều hashtag. Vậy nên hashtag có thể là `ObjectId[]`.
 
-- mentions là mảng chứa ObjectId của các user được mention. Vì mỗi tweet có thể có nhiều user được mention. Vậy nên mentions có thể là ObjectId[].
+- mentions là mảng chứa `ObjectId` của các user được mention. Vì mỗi tweet có thể có nhiều user được mention. Vậy nên mentions có thể là `ObjectId[]`.
 
-- medias là mảng chứa ObjectId của các media. Vì mỗi tweet chỉ có thể có 1 vài media. Nếu upload ảnh thì sẽ không upload được video và ngược lại. Vậy nên medias có thể là Media[].
+- medias là mảng chứa `ObjectId` của các media. Vì mỗi tweet chỉ có thể có 1 vài media. Nếu upload ảnh thì sẽ không upload được video và ngược lại. Vậy nên medias có thể là Media[].
 
 - Bên twitter sẽ có rất là nhiều chỉ số để phân tích lượt tiếp cận của 1 tweet. Trong giới hạn của khóa học thì chúng ta chỉ phân tích lượt view thôi.
 
-- Lượt view thì chúng ta chia ra làm 2 loại là guest_views là số lượng lượt xem của tweet từ người dùng không đăng nhập và user_views là dành cho đã đăng nhập. 2 trường này mình sẽ cho kiểu dữ liệu là number.
+- Lượt view thì chúng ta chia ra làm 2 loại là `guest_views` là số lượng lượt xem của tweet từ người dùng không đăng nhập và `user_views` là dành cho đã đăng nhập. 2 trường này mình sẽ cho kiểu dữ liệu là `number`.
 
 ```ts
 interface Tweet {

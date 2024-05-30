@@ -84,3 +84,22 @@ interface RefreshToken {
 }
 
 ```
+
+### followers
+
+- Một người dùng có thể follow rất nhiều user khác, nếu dùng 1 mảng `followings` chứa ObjectId trong collection `users` thì sẽ không tối ưu. Vì dễ chạm đến giới hạn 16MB của MongoDB.
+
+- Chưa hết, nếu dùng mảng `followings` thì khi muốn tìm kiếm user A đang follow ai rất dễ nhưng ngược lại, tìm kiếm ai đang follow user A thì lại rất khó.
+
+- Vậy nên ta tạo ra một collection riêng để lưu các mối quan hệ follow giữa các user là hợp lý hơn cả.
+
+- 1 user có rất nhiều follower, và 1 follower cũng có rất nhiều user khác follow lại => Quan hệ rất nhiều - rất nhiều
+
+```ts
+interface Follower {
+  _id: ObjectId
+  user_id: ObjectId
+  followed_user_id: ObjectId
+  created_at: Date
+}
+```

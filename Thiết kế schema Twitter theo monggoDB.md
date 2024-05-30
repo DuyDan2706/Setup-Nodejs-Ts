@@ -165,3 +165,16 @@ enum TweetType {
   QuoteTweet
 }
 ```
+
+## bookmarks
+
+- Bookmark các tweet lại, mỗi user không giới hạn số lượng bookmark. Sở dĩ không cần updated_at là vì trong trường hợp người dùng unbookmark thì chúng ta sẽ xóa document này đi.
+- boookmark dùng để lưu lại thui
+```ts
+interface Bookmark {
+  _id: ObjectId
+  user_id: ObjectId
+  tweet_id: ObjectId
+  created_at: Date
+}
+```

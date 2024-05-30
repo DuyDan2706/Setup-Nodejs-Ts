@@ -25,11 +25,11 @@ Một số  ghi chú
 
   - người dùng đăng ký nhập `name `, `email` , `day_of_birth`,`password` là được.vậy  `name `, `email` , `day_of_birth`,`password`  là nhuwnxgg trường bắt buộc phải có bên cạnh `_id ` là trường tự động bơi MonoDb 
 
-  -Sau khi đăng ký xonbgg thì sẽ có email đính kèm `email_veryfy_token `để xác thực email (`tranduydan.com/verify_email?email_veryfy_token=12321212`) . user chỉ có 1 `email_veryfy_token `  duy nhất vì nếu user nhấn resend email thì sẽ tại ra `email_veryfy_token ` mới thay thế cái cũ vạy nên ta lưu thêm trường `email_veryfy_token ` vào schema `User`. Trường này có kiểu `Stringg` nếu user xác thực email thì ta set `" `
+  - Sau khi đăng ký xonbgg thì sẽ có email đính kèm `email_veryfy_token `để xác thực email (`tranduydan.com/verify_email?email_veryfy_token=12321212`) . user chỉ có 1 `email_veryfy_token `  duy nhất vì nếu user nhấn resend email thì sẽ tại ra `email_veryfy_token ` mới thay thế cái cũ vạy nên ta lưu thêm trường `email_veryfy_token ` vào schema `User`. Trường này có kiểu `Stringg` nếu user xác thực email thì ta set `" `
 
-  -- tuonwgg tự ta có chức năng quên mặt khẩu thì sẽ gữi mail về đẻ reset mật khẩu ta cũng dung `forgot_pasword_token` để xác thực . Vạy ta có thể lưu thêm trưởng f `forgot_pasword_token` vào schema User .Trường anfy `string` nếu user reset makeet kaaur thì set `""`
+  - tuonwgg tự ta có chức năng quên mặt khẩu thì sẽ gữi mail về đẻ reset mật khẩu ta cũng dung `forgot_pasword_token` để xác thực . Vạy ta có thể lưu thêm trưởng f `forgot_pasword_token` vào schema User .Trường anfy `string` nếu user reset makeet kaaur thì set `""`
 
-   Nếu có một trường `veryfy` để biết trạng thái tài khoản của user. Ví dụ chưa xác thực email, đã xác thực bị khóa lên tích xanh vậy giá trị của nó nên là enum 
+   - Nếu có một trường `veryfy` để biết trạng thái tài khoản của user. Ví dụ chưa xác thực email, đã xác thực bị khóa lên tích xanh vậy giá trị của nó nên là enum 
 
    - Người dùng có thể update các thoongg tin cho profile : `bio`, `location`,`website`, `usernaem `,`avatar`,`cover_phôt`.vạy t ta cũng lưu trường này vào schema User với kiểu `string`.,`avatar`,`cover_photto` đơn giản chỉ là string url thôi.Dây là những giá trị optinal tức người dùng không nhập vào thì vẫn dùng bình thường.nhưng cũng lưu và set `'` khi người dunggf không nhập để tiện quản lú
 
